@@ -1,0 +1,51 @@
+trigger:
+- none
+
+pool:
+  vmImage: Self Hosted
+
+stages:
+- stage: stage1
+  dependsOn: []
+  variables:
+  - group: group1
+  jobs:
+  - job: job1
+    pool: Self Hosted
+    steps:
+    - task: PowerShell@2
+      displayName: Count to $(countTo)
+      inputs:
+        targetType: 'inline'
+        script: '1..$(countTo) | Foreach-Object { Write-Host "Count $_ and wait 5 seconds"; Start-Sleep -Seconds 5}'
+        pwsh: true
+- stage: stage2
+  dependsOn: []
+  variables:
+  - group: group2
+  jobs:
+  - job: job2
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - task: PowerShell@2
+      displayName: Count to $(countTo)
+      inputs:
+        targetType: 'inline'
+        script: '1..$(countTo) | Foreach-Object { Write-Host "Count $_ and wait 5 seconds"; Start-Sleep -Seconds 5}'
+        pwsh: true
+- stage: stage3
+  dependsOn: [stage1, stage2]
+  variables:
+  - group: group3
+  jobs:
+  - job: job3
+    pool: Self Hosted
+    steps:
+    - task: PowerShell@2
+      displayName: Count to $(countTo)
+      inputs:
+        targetType: 'inline'
+        script: '1..$(countTo) | Foreach-Object { Write-Host "Count $_ and wait 5 seconds"; Start-Sleep -Seconds 5}'
+        pwsh: true
+

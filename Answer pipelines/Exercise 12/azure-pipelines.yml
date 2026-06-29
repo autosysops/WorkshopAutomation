@@ -1,0 +1,27 @@
+trigger:
+- none
+
+pool:
+  vmImage: Self Hosted
+
+stages:
+- stage: stage1
+  dependsOn: []
+  jobs:
+  - template: template.yml
+    parameters:
+      groupname: group1
+      pool: Self Hosted
+- stage: stage2
+  dependsOn: []
+  jobs:
+  - template: template.yml
+    parameters:
+      groupname: group2
+- stage: stage3
+  dependsOn: [stage1, stage2]
+  jobs:
+  - template: template.yml
+    parameters:
+      groupname: group3
+      pool: Self Hosted

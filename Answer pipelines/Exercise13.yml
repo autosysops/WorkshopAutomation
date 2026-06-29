@@ -1,0 +1,44 @@
+trigger:
+- none
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+- stage: stage1
+  jobs:
+  - job: job1
+    steps:
+    - task: PowerShell@2
+      name: setvar
+      inputs:
+        targetType: 'inline'
+        script: 'Write-Host "##vso[task.setvariable variable=var1;isOutput=true]DWX2026"'
+        pwsh: true
+  - job: job2
+    dependsOn: job1
+    variables:
+      job1var1: $[ dependencies.job1.outputs['setvar.var1'] ]
+    steps:
+      - task: PowerShell@2
+        name: setvar2
+        inputs:
+          targetType: 'inline'
+          script: |
+            Write-Host "##[debug] var1 = $(job1var1)"
+
+            Write-Host "##vso[task.setvariable variable=var2;isOutput=true]Hello $(job1var1)"
+- stage: stage2
+  dependsOn: stage1
+  jobs:
+  - job: job1
+    variables:
+      stage1job2var2: $[ stageDependencies.stage1.job2.outputs['setvar2.var2'] ]
+    steps:
+    - task: PowerShell@2
+      inputs:
+        targetType: 'inline'
+        script: |
+          Write-Host "##[debug] var2 = $(stage1job2var2)"
+
+          Write-Host "##[warning] var2 = $(stage1job2var2)":

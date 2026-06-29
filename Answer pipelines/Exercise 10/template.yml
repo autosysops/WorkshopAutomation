@@ -1,0 +1,13 @@
+jobs:
+- job: job
+  pool:
+    vmImage: ubuntu-latest
+  variables:
+  - group: group1
+  steps:
+  - task: PowerShell@2
+    displayName: Count to $(countTo)
+    inputs:
+      targetType: 'inline'
+      script: '1..$(countTo) | Foreach-Object { Write-Host "Count $_ and wait 5 seconds"; Start-Sleep -Seconds 5}'
+      pwsh: true
